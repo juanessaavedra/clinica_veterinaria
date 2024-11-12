@@ -1,11 +1,10 @@
 package com.example.clinica_veterinaria.service.owner;
 
 import com.example.clinica_veterinaria.dto.OwnerDTO;
-import com.example.clinica_veterinaria.model.Owner;
 
 import java.util.List;
 
-public interface IOwner {
+public interface IOwnerService {
 
     OwnerDTO createOwner(OwnerDTO ownerDTO);
     OwnerDTO getOwnerById(Long id);

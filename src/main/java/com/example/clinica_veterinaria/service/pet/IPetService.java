@@ -1,20 +1,13 @@
-package com.example.clinica_veterinaria.service.pet;
+package com.example.clinica_veterinaria.service;
 
-import com.example.clinica_veterinaria.dto.PetOwnerDTO;
-import com.example.clinica_veterinaria.model.Pet;
-
+import com.example.clinica_veterinaria.dto.PetDTO;
 import java.util.List;
 
 public interface IPetService {
-    public List<Pet> getAll();
-
-    public Pet getPetById(Long id);
-
-    public void savePet(Pet pet);
-
-    public void deletePet(Long id);
-
-    public void updatePet(Pet pet);
-
-    public List<PetOwnerDTO> getPetOwner();
+    PetDTO createPet(PetDTO petDTO);
+    PetDTO getPetById(Long id);
+    List<PetDTO> getAllPets();
+    PetDTO updatePet(Long id, PetDTO petDTO);
+    void deletePet(Long id);
+    List<PetDTO> getPetsByOwnerId(Long ownerId);
 }

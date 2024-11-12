@@ -1,63 +1,78 @@
 package com.example.clinica_veterinaria.service.pet;
 
-
-import com.example.clinica_veterinaria.dto.PetOwnerDTO;
+import com.example.clinica_veterinaria.dto.PetDTO;
+import com.example.clinica_veterinaria.mapper.PetMapper;
+import com.example.clinica_veterinaria.model.Owner;
 import com.example.clinica_veterinaria.model.Pet;
+import com.example.clinica_veterinaria.repository.IOwnerRepository;
 import com.example.clinica_veterinaria.repository.IPetRepository;
+import com.example.clinica_veterinaria.service.IPetService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PetServiceImpl implements IPetService {
+
     @Autowired
     private IPetRepository petRepository;
 
+    @Autowired
+    private IOwnerRepository ownerRepository;
+
     @Override
-    public List<Pet> getAll() {
-        List<Pet> pets = petRepository.findAll();
-        return pets;
+    public PetDTO createPet(PetDTO petDTO) {
+        Owner owner = ownerRepository.findById(petDTO.ownerId())
+                .orElseThrow(() -> new RuntimeException("Owner not found"));
+
+        Pet pet = PetMapper.toModel(petDTO, owner);
+        Pet savedPet = petRepository.save(pet);
+        return PetMapper.toDTO(savedPet);
     }
 
     @Override
-    public Pet getPetById(Long id) {
-        return petRepository.findById(id).orElse(null);
+    public PetDTO getPetById(Long id) {
+        Pet pet = petRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Pet not found"));
+        return PetMapper.toDTO(pet);
     }
 
     @Override
-    public void savePet(Pet pet) {
-        petRepository.save(pet);
+    public List<PetDTO> getAllPets() {
+        return petRepository.findAll().stream()
+                .map(PetMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public PetDTO updatePet(Long id, PetDTO petDTO) {
+        Pet existingPet = petRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Pet not found"));
+
+        Owner owner = ownerRepository.findById(petDTO.ownerId())
+                .orElseThrow(() -> new RuntimeException("Owner not found"));
+
+        Pet petToUpdate = PetMapper.toModel(petDTO, owner);
+        petToUpdate.setIdPet(id);
+
+        Pet updatedPet = petRepository.save(petToUpdate);
+        return PetMapper.toDTO(updatedPet);
     }
 
     @Override
     public void deletePet(Long id) {
+        if (!petRepository.existsById(id)) {
+            throw new RuntimeException("Pet not found");
+        }
         petRepository.deleteById(id);
     }
 
     @Override
-    public void updatePet(Pet pet) {
-        this.savePet(pet);
-    }
-
-    @Override
-    public List<PetOwnerDTO> getPetOwner() {
-        List<Pet> pets = this.getAll();
-        List<PetOwnerDTO> petOwnerDTOS = new ArrayList<PetOwnerDTO>();
-        PetOwnerDTO petOwnerDTO = new PetOwnerDTO();
-
-        for (Pet pet : pets){
-            System.out.println(pet.getName());
-            petOwnerDTO.setName_owner(pet.getOwner().getName());
-            petOwnerDTO.setName_pet(pet.getName());
-            petOwnerDTO.setLastname_owner(pet.getOwner().getLast_name());
-            petOwnerDTO.setSpecies(pet.getSpecies());
-            petOwnerDTO.setBreed(pet.getBreed());
-
-            petOwnerDTOS.add(petOwnerDTO);
-            petOwnerDTO = new PetOwnerDTO(); //reset
-        }
-        return petOwnerDTOS;
+    public List<PetDTO> getPetsByOwnerId(Long ownerId) {
+        return petRepository.findById(ownerId).stream()
+                .map(PetMapper::toDTO)
+                .collect(Collectors.toList());
     }
 }
