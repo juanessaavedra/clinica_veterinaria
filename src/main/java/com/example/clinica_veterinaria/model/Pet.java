@@ -1,32 +1,28 @@
 package com.example.clinica_veterinaria.model;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.web.bind.annotation.RestController;
-@Getter
-@Setter
-@RestController
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Table(name = "pets")
 public class Pet {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Long id_pet;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long idPet;
+
     private String name;
     private String species;
     private String breed;
 
     @OneToOne
-    @JoinColumn(name = "id_owner", referencedColumnName = "id_owner")
+    @JoinColumn(name = "id_owner", referencedColumnName = "idOwner")
     private Owner owner;
-
-    public Pet() {
-    }
-
-    public Pet(String name, String species, String breed, Owner owner) {
-        this.name = name;
-        this.species = species;
-        this.breed = breed;
-        this.owner = owner;
-    }
 }
