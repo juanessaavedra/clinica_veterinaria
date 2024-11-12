@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.example</groupId>
 	<artifactId>clinica_veterinaria</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<name>clinica_veterinaria</name>
 	<description>Proyecto Spring Boot para gestionar una clínica veterinaria con docker</description>
 	<url/>
